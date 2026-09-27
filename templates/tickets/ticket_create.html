@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Create Ticket{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="page-title mb-0">Create Ticket</h3>
+  <a class="btn btn-sm btn-outline-secondary" href="{% url 'ticket_list' %}">Back to Tickets</a>
+</div>
+
+<div class="card p-3 shadow-sm">
+  <form method="post" enctype="multipart/form-data" id="ticketCreateForm" novalidate>
+    {% csrf_token %}
+
+    <!-- Show form-level errors -->
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <!-- 1) Ticket information -->
+    <div class="form-section mb-3">
+      <div class="section-title">
+        <span class="step">1</span>
+        <span>Describe the issue</span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-8">
+          <label class="form-label" for="{{ form.title.id_for_label }}">Title</label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <div class="text-danger small">{{ form.title.errors }}</div>
+          {% endif %}
+          <div class="help-text mt-1">Example: “Printer not working” or “Forgot password”.</div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label" for="{{ form.category.id_for_label }}">Category</label>
+          {{ form.category }}
+          {% if form.category.errors %}
+            <div class="text-danger small">{{ form.category.errors }}</div>
+          {% endif %}
+          <div class="help-text mt-1">If unsure, leave default and AI will suggest.</div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label" for="{{ form.priority.id_for_label }}">Priority</label>
+          {{ form.priority }}
+          {% if form.priority.errors %}
+            <div class="text-danger small">{{ form.priority.errors }}</div>
+          {% endif %}
+          <div class="help-text mt-1">Critical = blocking work / system down.</div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div class="text-danger small">{{ form.description.errors }}</div>
+          {% endif %}
+          <div class="help-text mt-1">Include error messages, device name, location, and what you already tried.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2) AI suggestions -->
+    <div class="form-section mb-3">
+      <div class="section-title">
+        <span class="step">2</span>
+        <span>AI Assistance (auto triage & self-help)</span>
+      </div>
+
+      <div id="aiBox" class="ai-box" style="display:none;">
+        <div class="mb-2"><strong>AI Suggestions</strong></div>
+
+        <div class="ai-kpi">
+          <div class="kpi">
+            <div class="kpi-label">Suggested Category</div>
+            <div class="kpi-value" id="aiCategory">-</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Suggested Priority</div>
+            <div class="kpi-value" id="aiPriority">-</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Confidence</div>
+            <div class="kpi-value" id="aiConfidence">-</div>
+          </div>
+        </div>
+
+        <hr class="my-2" />
+
+        <div class="mt-2">
+          <strong>Related Knowledge Base Articles</strong>
+          <ul id="aiKb" class="ai-list mt-1"></ul>
+        </div>
+
+        <div class="mt-2">
+          <strong>Suggested Steps</strong>
+          <ul id="aiSteps" class="ai-list mt-1"></ul>
+        </div>
+      </div>
+
+      <div class="help-text mt-2">
+        Start typing your title/description. AI will suggest category/priority and show related KB articles and steps.
+      </div>
+    </div>
+
+    <!-- 3) Attachments -->
+    <div class="form-section mb-3">
+      <div class="section-title">
+        <span class="step">3</span>
+        <span>Attachments (optional)</span>
+      </div>
+
+      <label class="form-label">Upload PNG/JPG/PDF (max 10MB each)</label>
+      <input type="file" name="attachments" multiple class="form-control" />
+      <div class="help-text mt-1">Attach screenshots or error logs to help IT understand faster.</div>
+    </div>
+
+    <!-- 4) Submit -->
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Submit Ticket</button>
+      <a class="btn btn-outline-secondary" href="{% url 'ticket_list' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

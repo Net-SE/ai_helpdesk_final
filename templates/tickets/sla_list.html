@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}SLA Config{% endblock %}
+{% block content %}
+<h3>SLA Config</h3>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Priority</th>
+      <th>Response (minutes)</th>
+      <th>Resolve (minutes)</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in qs %}
+      <tr>
+        <td>{{ s.priority }}</td>
+        <td>{{ s.response_minutes }}</td>
+        <td>{{ s.resolve_minutes }}</td>
+        <td><a class="btn btn-sm btn-secondary" href="{% url 'sla_edit' s.pk %}">Edit</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">No SLA rules yet. Seed demo or create in admin.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

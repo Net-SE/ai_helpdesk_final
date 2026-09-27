@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Search - HelpDesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Search Help Desk</h3>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+  <div class="col-md-10">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="Search tickets and solutions..." autofocus>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100" type="submit">Search</button>
+  </div>
+</form>
+
+{% if q %}
+<h5 class="mb-3">Tickets</h5>
+<div class="list-group mb-4">
+  {% for ticket in ticket_results %}
+    <a class="list-group-item list-group-item-action" href="{% url 'ticket_detail' ticket.pk %}">
+      <div class="d-flex justify-content-between">
+        <strong>{{ ticket.display_id }} — {{ ticket.title }}</strong>
+        <span class="badge bg-secondary">{{ ticket.status }}</span>
+      </div>
+      <div class="small text-muted">{{ ticket.category }} | {{ ticket.priority }} | {{ ticket.created_at }}</div>
+    </a>
+  {% empty %}
+    <div class="text-muted">No matching tickets.</div>
+  {% endfor %}
+</div>
+
+<h5 class="mb-3">Knowledge Base Solutions</h5>
+<div class="list-group">
+  {% for article in kb_results %}
+    <a class="list-group-item list-group-item-action" href="{% url 'kb_detail' article.pk %}">
+      <strong>{{ article.title }}</strong>
+      <div class="small text-muted">{{ article.created_at }}</div>
+    </a>
+  {% empty %}
+    <div class="text-muted">No matching solutions.</div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">Enter a keyword to search tickets and Knowledge Base solutions.</div>
+{% endif %}
+{% endblock %}

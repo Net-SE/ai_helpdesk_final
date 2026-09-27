@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: helpdesk_test
+          POSTGRES_USER: helpdesk
+          POSTGRES_PASSWORD: helpdesk
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U helpdesk -d helpdesk_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DJANGO_SECRET_KEY: ci-only-secret-change-me-1234567890-abcdefghijklmnopqrstuvwxyz
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      DJANGO_CSRF_TRUSTED_ORIGINS: https://localhost
+      DJANGO_SECURE_SSL_REDIRECT: "False"
+      DJANGO_SESSION_COOKIE_SECURE: "False"
+      DJANGO_CSRF_COOKIE_SECURE: "False"
+      DJANGO_SECURE_HSTS_SECONDS: "0"
+      DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS: "False"
+      DJANGO_SECURE_HSTS_PRELOAD: "False"
+      DATABASE_URL: postgresql://helpdesk:helpdesk@127.0.0.1:5432/helpdesk_test
+      EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
+      DEFAULT_FROM_EMAIL: ci@example.com
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - name: Compile Python
+        run: python -m compileall -q .
+      - name: Static analysis
+        run: pip install ruff==0.13.0 && ruff check --select E,F --ignore E501,F401 .
+      - name: Django checks
+        run: python manage.py check
+      - name: Production security checks
+        env:
+          DJANGO_SECURE_SSL_REDIRECT: "True"
+          DJANGO_SESSION_COOKIE_SECURE: "True"
+          DJANGO_CSRF_COOKIE_SECURE: "True"
+          DJANGO_SECURE_HSTS_SECONDS: "31536000"
+          DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS: "True"
+          DJANGO_SECURE_HSTS_PRELOAD: "False"
+        run: python manage.py check --deploy
+      - name: Database migrations
+        run: python manage.py migrate --noinput
+      - name: Tests
+        run: python manage.py test --verbosity 2
+      - name: Dependency audit
+        run: pip install pip-audit && pip-audit -r requirements.txt
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  container:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t ai-helpdesk:${{ github.sha }} .
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push versioned image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:staging
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy version to staging over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd ${{ secrets.STAGING_APP_DIR }}
+            export RELEASE_TAG=${{ github.sha }}
+            export HELP_DESK_IMAGE=ghcr.io/${{ github.repository }}:${{ github.sha }}
+            docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.GITHUB_TOKEN }}'
+            docker compose -f docker-compose.staging.yml pull
+            docker compose -f docker-compose.staging.yml up -d
+            python3 scripts/smoke_test.py "${STAGING_URL:-http://127.0.0.1:8001}"

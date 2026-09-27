@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-helpdesk_staging}
+      POSTGRES_USER: ${DB_USER:-helpdesk_staging}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD for staging}
+    volumes:
+      - staging_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-helpdesk_staging} -d ${DB_NAME:-helpdesk_staging}"]
+
+  web:
+    image: ${HELP_DESK_IMAGE:-ghcr.io/example/ai-helpdesk:staging}
+    restart: unless-stopped
+    env_file:
+      - .env.staging
+    environment:
+      DATABASE_URL: postgresql://helpdesk_staging:${DB_PASSWORD}@db:5432/helpdesk_staging
+      DJANGO_DEBUG: "False"
+    ports:
+      - "8001:8000"
+    volumes:
+      - staging_media:/app/media
+      - staging_static:/app/staticfiles
+      - staging_backups:/app/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "scripts/docker_healthcheck.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  staging_postgres_data:
+  staging_media:
+  staging_static:
+  staging_backups:

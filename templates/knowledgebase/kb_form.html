@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if mode == "edit" %}
+        Edit KB Article
+    {% else %}
+        Create KB Article
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="kb-form-page">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <div class="page-breadcrumb mb-2">
+                <span>Knowledge Base</span>
+                <i class="fas fa-chevron-right"></i>
+
+                <span>
+                    {% if mode == "edit" %}
+                        Edit Article
+                    {% else %}
+                        Create Article
+                    {% endif %}
+                </span>
+            </div>
+
+            <h3 class="page-title mb-1">
+                <i class="fas fa-book-open text-primary me-2"></i>
+
+                {% if mode == "edit" %}
+                    Edit KB Article
+                {% else %}
+                    Create KB Article
+                {% endif %}
+            </h3>
+
+            <p class="text-muted mb-0">
+                {% if mode == "edit" %}
+                    Update the knowledge base article information.
+                {% else %}
+                    Create a new solution for the Knowledge Base.
+                {% endif %}
+            </p>
+        </div>
+
+        <a class="btn btn-outline-secondary back-btn"
+           href="{% if article %}{% url 'kb_detail' article.pk %}{% else %}{% url 'kb_list' %}{% endif %}">
+            <i class="fas fa-arrow-left me-1"></i>
+            Back
+        </a>
+
+    </div>
+
+
+    <!-- Form Card -->
+    <div class="card kb-form-card">
+
+        <!-- Card Header -->
+        <div class="card-header kb-card-header">
+
+            <div class="d-flex align-items-center">
+
+                <div class="kb-icon">
+                    {% if mode == "edit" %}
+                        <i class="fas fa-pen"></i>
+                    {% else %}
+                        <i class="fas fa-plus"></i>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <h5 class="mb-1">
+                        {% if mode == "edit" %}
+                            Article Information
+                        {% else %}
+                            New Article
+                        {% endif %}
+                    </h5>
+
+                    <small class="text-muted">
+                        Fill in the information below.
+                    </small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Card Body -->
+        <div class="card-body p-4">
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger custom-alert">
+                    <i class="fas fa-circle-exclamation me-2"></i>
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                <!-- Form Fields -->
+                <div class="kb-form-fields">
+
+                    {{ form.as_p }}
+
+                </div>
+
+
+                <!-- Actions -->
+                <div class="form-actions">
+
+                    <a class="btn btn-light border"
+                       href="{% if article %}{% url 'kb_detail' article.pk %}{% else %}{% url 'kb_list' %}{% endif %}">
+                        <i class="fas fa-xmark me-1"></i>
+                        Cancel
+                    </a>
+
+                    <button class="btn btn-primary save-btn"
+                            type="submit">
+
+                        {% if mode == "edit" %}
+                            <i class="fas fa-save me-1"></i>
+                            Update Article
+                        {% else %}
+                            <i class="fas fa-plus me-1"></i>
+                            Save Article
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    {% if mode == "edit" %}
+        <!-- Edit Notice -->
+        <div class="edit-notice mt-3">
+
+            <i class="fas fa-circle-info"></i>
+
+            <div>
+                <strong>Editing Knowledge Base Article</strong>
+
+                <p class="mb-0">
+                    Review the article information carefully before saving
+                    your changes.
+                </p>
+            </div>
+
+        </div>
+    {% endif %}
+
+</div>
+
+
+<style>
+
+/* =========================================================
+   Knowledge Base Form
+   ========================================================= */
+
+.kb-form-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+
+/* Breadcrumb */
+
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.page-breadcrumb i {
+    font-size: 9px;
+    color: #adb5bd;
+}
+
+
+/* Page Title */
+
+.page-title {
+    font-weight: 700;
+    color: #212529;
+}
+
+
+/* Back Button */
+
+.back-btn {
+    border-radius: 8px;
+    padding: 8px 14px;
+    transition: all .2s ease;
+}
+
+.back-btn:hover {
+    transform: translateX(-2px);
+}
+
+
+/* Main Card */
+
+.kb-form-card {
+    border: 0;
+    border-radius: 14px;
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, .06);
+
+    overflow: hidden;
+}
+
+
+/* Card Header */
+
+.kb-card-header {
+    background: #fff;
+
+    border-bottom: 1px solid #edf0f2;
+
+    padding: 20px 24px;
+}
+
+
+/* Icon */
+
+.kb-icon {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 11px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(13, 110, 253, .1);
+
+    color: #0d6efd;
+
+    margin-right: 14px;
+
+    font-size: 18px;
+}
+
+
+/* Form */
+
+.kb-form-fields p {
+    margin-bottom: 22px;
+}
+
+
+/* Labels */
+
+.kb-form-fields label {
+    display: block;
+
+    font-weight: 600;
+
+    color: #343a40;
+
+    margin-bottom: 7px;
+}
+
+
+/* Inputs */
+
+.kb-form-fields input[type="text"],
+.kb-form-fields input[type="email"],
+.kb-form-fields input[type="url"],
+.kb-form-fields textarea,
+.kb-form-fields select {
+
+    width: 100%;
+
+    border: 1px solid #dfe3e7;
+
+    border-radius: 9px;
+
+    padding: 10px 12px;
+
+    background: #fff;
+
+    color: #212529;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+
+/* Textarea */
+
+.kb-form-fields textarea {
+    min-height: 260px;
+
+    resize: vertical;
+
+    line-height: 1.7;
+}
+
+
+/* Input Focus */
+
+.kb-form-fields input:focus,
+.kb-form-fields textarea:focus,
+.kb-form-fields select:focus {
+
+    outline: none;
+
+    border-color: #86b7fe;
+
+    box-shadow:
+        0 0 0 3px rgba(13, 110, 253, .1);
+}
+
+
+/* Checkbox */
+
+.kb-form-fields input[type="checkbox"] {
+
+    width: 18px;
+    height: 18px;
+
+    margin-right: 8px;
+
+    accent-color: #0d6efd;
+
+    vertical-align: middle;
+}
+
+
+/* Checkbox Label */
+
+.kb-form-fields input[type="checkbox"] + label {
+    display: inline-block;
+
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+/* Help Text */
+
+.kb-form-fields .helptext {
+
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 13px;
+
+    color: #6c757d;
+}
+
+
+/* Errors */
+
+.kb-form-fields .errorlist {
+
+    list-style: none;
+
+    padding: 0;
+
+    margin: 6px 0 0;
+
+    color: #dc3545;
+
+    font-size: 13px;
+}
+
+
+/* Alert */
+
+.custom-alert {
+
+    border: 0;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+}
+
+
+/* Action Buttons */
+
+.form-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #edf0f2;
+
+    margin-top: 10px;
+}
+
+
+.form-actions .btn {
+
+    border-radius: 8px;
+
+    padding: 9px 18px;
+
+    font-weight: 500;
+}
+
+
+/* Save Button */
+
+.save-btn {
+
+    box-shadow:
+        0 3px 8px rgba(13, 110, 253, .18);
+
+    transition: all .2s ease;
+}
+
+
+.save-btn:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(13, 110, 253, .25);
+}
+
+
+/* Edit Notice */
+
+.edit-notice {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 14px 16px;
+
+    border-radius: 10px;
+
+    background: #f0f7ff;
+
+    color: #245269;
+
+    font-size: 14px;
+}
+
+
+.edit-notice > i {
+
+    color: #0d6efd;
+
+    margin-top: 3px;
+}
+
+
+.edit-notice p {
+
+    color: #6c757d;
+
+    font-size: 13px;
+
+    margin-top: 3px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+    .kb-form-page {
+        width: 100%;
+    }
+
+    .page-title {
+        font-size: 1.4rem;
+    }
+
+    .kb-card-header {
+        padding: 16px;
+    }
+
+    .card-body {
+        padding: 20px !important;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .back-btn {
+        padding: 7px 10px;
+    }
+
+}
+
+</style>
+
+{% endblock %}

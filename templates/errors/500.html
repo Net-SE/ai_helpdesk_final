@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error 500{% endblock %}
+{% block content %}
+<div class="card p-4">
+  <h2>Error 500</h2>
+  <p>Sorry, the request could not be completed. Please return to the Help Desk.</p>
+  <a class="btn btn-primary" href="{% url 'ticket_list' %}">Back to Help Desk</a>
+</div>
+{% endblock %}

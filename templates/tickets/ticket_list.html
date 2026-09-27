@@ -1,0 +1,116 @@
+{% extends "base.html" %} {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Tickets</h3>
+  <a class="btn btn-primary" href="{% url 'ticket_create' %}">Create Ticket</a>
+</div>
+
+<form class="row g-2 mb-3">
+  <div class="col-md-4">
+    <input
+      class="form-control"
+      name="q"
+      placeholder="Search..."
+      value="{{ request.GET.q }}"
+    />
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="status">
+      <option value="">Status</option>
+      {% for v,l in Ticket.Status.choices %}
+      <option
+        value="{{v}}"
+        {%
+        if
+        request.GET.status=""
+        ="v"
+        %}selected{%
+        endif
+        %}
+      >
+        {{l}}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="category">
+      <option value="">Category</option>
+      {% for v,l in Ticket.Category.choices %}
+      <option
+        value="{{v}}"
+        {%
+        if
+        request.GET.category=""
+        ="v"
+        %}selected{%
+        endif
+        %}
+      >
+        {{l}}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="priority">
+      <option value="">Priority</option>
+      {% for v,l in Ticket.Priority.choices %}
+      <option
+        value="{{v}}"
+        {%
+        if
+        request.GET.priority=""
+        ="v"
+        %}selected{%
+        endif
+        %}
+      >
+        {{l}}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-secondary w-100">Filter</button>
+  </div>
+</form>
+
+<div class="list-group">
+  {% for t in page.object_list %}
+  <a
+    class="list-group-item list-group-item-action"
+    href="{% url 'ticket_detail' t.pk %}"
+  >
+    <div class="d-flex justify-content-between">
+      <div>
+        <strong>{{ t.display_id }}</strong> — {{ t.title }}
+        <div class="small text-muted">
+          {{ t.category }} | {{ t.priority }} | {{ t.status }}
+        </div>
+      </div>
+      <div class="small text-muted">{{ t.created_at }}</div>
+    </div>
+  </a>
+  {% empty %}
+  <div class="alert alert-info">No tickets.</div>
+  {% endfor %}
+</div>
+
+<nav class="mt-3">
+  <ul class="pagination">
+    {% if page.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{page.previous_page_number}}">Prev</a>
+    </li>
+    {% endif %}
+    <li class="page-item active">
+      <span class="page-link">{{ page.number }}</span>
+    </li>
+    {% if page.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{page.next_page_number}}">Next</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endblock %}

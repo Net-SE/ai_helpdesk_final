@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Audit Log{% endblock %}
+{% block content %}
+<h3>Audit Log</h3>
+
+<form class="row g-2 mb-3">
+  <div class="col-md-10">
+    <input class="form-control" name="q" placeholder="Search action/type/message..." value="{{ q }}">
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-secondary w-100">Search</button>
+  </div>
+</form>
+
+<table class="table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Actor</th>
+      <th>Action</th>
+      <th>Object</th>
+      <th>Message</th>
+      <th>IP</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in page.object_list %}
+      <tr>
+        <td class="text-muted">{{ a.created_at }}</td>
+        <td>{{ a.actor }}</td>
+        <td><code>{{ a.action }}</code></td>
+        <td>{{ a.object_type }}:{{ a.object_id }}</td>
+        <td style="max-width: 450px; white-space: pre-wrap;">{{ a.message }}</td>
+        <td class="text-muted">{{ a.ip_address }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">No audit logs.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

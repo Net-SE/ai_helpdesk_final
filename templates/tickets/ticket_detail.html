@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Ticket {{ ticket.display_id }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h3 class="mb-1">{{ ticket.display_id }} — {{ ticket.title }}</h3>
+    <div class="ticket-meta">
+      <span class="badge bg-secondary">{{ ticket.category }}</span>
+      <span class="badge bg-warning text-dark">{{ ticket.priority }}</span>
+      <span class="badge bg-info text-dark">{{ ticket.status }}</span>
+      {% if ticket.assigned_to %}<span class="badge bg-dark">Assigned: {{ ticket.assigned_to.username }}</span>{% endif %}
+    </div>
+  </div>
+  <a class="btn btn-sm btn-outline-secondary" href="{% url 'ticket_list' %}">Back</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-8">
+    <div class="card section-card p-3 mb-3">
+      <h6 class="mb-2">Description</h6>
+      <pre class="mb-0">{{ ticket.description }}</pre>
+
+      <hr>
+      <div class="small">
+        <div><strong>SLA Response Due:</strong> {{ ticket.due_response_at }}
+          {% if ticket.is_sla_response_breached %}<span class="badge bg-danger">BREACHED</span>{% endif %}
+        </div>
+        <div><strong>SLA Resolve Due:</strong> {{ ticket.due_resolve_at }}
+          {% if ticket.is_sla_resolve_breached %}<span class="badge bg-danger">BREACHED</span>{% endif %}
+        </div>
+
+        {% if ticket.ai_category %}
+          <div class="mt-2 text-muted">
+            <strong>AI Suggestion:</strong>
+            {{ ticket.ai_category }} / {{ ticket.ai_priority }} (conf: {{ ticket.ai_confidence }})
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card section-card p-3">
+      <h6 class="mb-3">Comments</h6>
+
+      {% for c in comments %}
+        <div class="comment-item {% if c.is_internal %}internal{% endif %}">
+          <div class="comment-header">
+            <div>
+              <strong>{{ c.author.username }}</strong>
+              {% if c.is_internal %}<span class="badge bg-warning text-dark ms-2">Internal</span>{% endif %}
+            </div>
+            <div>{{ c.created_at }}</div>
+          </div>
+          <div style="white-space: pre-wrap;">{{ c.message }}</div>
+        </div>
+      {% empty %}
+        <div class="text-muted">No comments.</div>
+      {% endfor %}
+
+      <hr>
+      <form method="post" action="{% url 'ticket_add_comment' ticket.pk %}">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button class="btn btn-dark" type="submit">Post Comment</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card section-card p-3 mb-3">
+      <h6>Attachments</h6>
+      <ul class="mb-0">
+        {% for a in ticket.attachments.all %}
+          <li><a href="{% url 'attachment_download' a.pk %}">Download</a> <span class="text-muted small">({{ a.uploaded_at }})</span></li>
+        {% empty %}
+          <li class="text-muted">No attachments.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="card section-card p-3 mb-3">
+      <h6>Assignment</h6>
+      <div class="small mb-2" >Assigned to: <strong>{% if ticket.assigned_to %}{{ ticket.assigned_to.username }}{% else %}Unassigned{% endif %}</strong></div>
+
+      {% if assign_form %}
+        <form method="post" action="{% url 'ticket_assign' ticket.pk %}">
+          {% csrf_token %}
+          {{ assign_form.as_p }}
+          <button class="btn btn-secondary" type="submit">Assign</button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="card section-card p-3">
+      <h6>Status Update</h6>
+
+      {% if status_form %}
+        {% if status_form.non_field_errors %}
+          <div class="alert alert-danger">{{ status_form.non_field_errors }}</div>
+        {% endif %}
+
+        <form method="post" action="{% url 'ticket_update_status' ticket.pk %}">
+          {% csrf_token %}
+          {{ status_form.as_p }}
+          <div class="help-text">When setting <strong>Resolved</strong>, you must enter a Resolution Note.</div>
+          <button class="btn btn-primary mt-2" type="submit">Update Status</button>
+        </form>
+      {% else %}
+        <div class="text-muted small">Only IT Technician/Manager/Admin can update status.</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

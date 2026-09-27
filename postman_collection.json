@@ -1,0 +1,13 @@
+{
+  "info": {"name": "IT Assist API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "variable": [{"key": "base_url", "value": "http://127.0.0.1:8000"}, {"key": "ticket_id", "value": "1"}],
+  "item": [
+    {"name":"Health","request":{"method":"GET","url":{"raw":"{{base_url}}/api/health/","host":["{{base_url}}"],"path":["api","health"]}}},
+    {"name":"Login","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"username\": \"req1_demo\",\n  \"password\": \"Password123!\"\n}"},"url":{"raw":"{{base_url}}/api/auth/login/","host":["{{base_url}}"],"path":["api","auth","login"]}}},
+    {"name":"AI Suggest","request":{"method":"POST","auth":{"type":"basic","basic":[{"key":"username","value":"req1_demo"},{"key":"password","value":"Password123!"}]},"header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"title\": \"Printer is not working\",\n  \"description\": \"The printer cannot print documents.\"\n}"},"url":{"raw":"{{base_url}}/api/ai/suggest/","host":["{{base_url}}"],"path":["api","ai","suggest"]}}},
+    {"name":"List Tickets","request":{"method":"GET","auth":{"type":"basic","basic":[{"key":"username","value":"req1_demo"},{"key":"password","value":"Password123!"}]},"url":{"raw":"{{base_url}}/api/tickets/","host":["{{base_url}}"],"path":["api","tickets"]}}},
+    {"name":"Create Ticket","request":{"method":"POST","auth":{"type":"basic","basic":[{"key":"username","value":"req1_demo"},{"key":"password","value":"Password123!"}]},"header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"title\": \"Printer is not working\",\n  \"description\": \"The printer cannot print documents.\"\n}"},"url":{"raw":"{{base_url}}/api/tickets/","host":["{{base_url}}"],"path":["api","tickets"]}}},
+    {"name":"Get Ticket","request":{"method":"GET","auth":{"type":"basic","basic":[{"key":"username","value":"req1_demo"},{"key":"password","value":"Password123!"}]},"url":{"raw":"{{base_url}}/api/tickets/{{ticket_id}}/","host":["{{base_url}}"],"path":["api","tickets","{{ticket_id}}"]}}},
+    {"name":"Knowledge Base","request":{"method":"GET","auth":{"type":"basic","basic":[{"key":"username","value":"req1_demo"},{"key":"password","value":"Password123!"}]},"url":{"raw":"{{base_url}}/api/kb/","host":["{{base_url}}"],"path":["api","kb"]}}}
+  ]
+}

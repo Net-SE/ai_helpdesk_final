@@ -1,0 +1,385 @@
+/* =========================================
+   CREATE TICKET FORM
+   ========================================= */
+
+#ticketCreateForm {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  color: #1e293b;
+}
+
+/* Form sections */
+#ticketCreateForm .form-section {
+  background: #ffffff;
+  border: 1px solid #dbe3ec;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+#ticketCreateForm .section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+#ticketCreateForm .section-title .step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+/* Django form.as_p spacing */
+#ticketCreateForm p {
+  margin: 0 0 20px;
+}
+
+/* Field labels */
+#ticketCreateForm label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Inputs work with or without Bootstrap classes */
+#ticketCreateForm input[type="text"],
+#ticketCreateForm input[type="email"],
+#ticketCreateForm input[type="number"],
+#ticketCreateForm input[type="file"],
+#ticketCreateForm textarea,
+#ticketCreateForm select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Description */
+#ticketCreateForm textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+/* Placeholder text */
+#ticketCreateForm input::placeholder,
+#ticketCreateForm textarea::placeholder {
+  color: #64748b;
+}
+
+/* Visible keyboard/mouse focus */
+#ticketCreateForm input:focus,
+#ticketCreateForm textarea:focus,
+#ticketCreateForm select:focus {
+  border-color: #2563eb;
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+/* Attachment field */
+#ticketCreateForm input[type="file"] {
+  padding: 10px;
+  background-color: #f8fafc;
+}
+
+#ticketCreateForm input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: #e0e7ff;
+  color: #1e40af;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#ticketCreateForm input[type="file"]::file-selector-button:hover {
+  background: #c7d2fe;
+}
+
+/* Django validation errors */
+#ticketCreateForm .errorlist {
+  margin: 8px 0 12px;
+  padding-left: 20px;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+#ticketCreateForm [aria-invalid="true"] {
+  border-color: #b91c1c;
+}
+
+/* Help text */
+#ticketCreateForm .helptext,
+#ticketCreateForm .help-text {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* AI suggestion panel */
+#ticketCreateForm .ai-box {
+  padding: 20px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+#ticketCreateForm .ai-kpi {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+#ticketCreateForm .ai-kpi .kpi {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+#ticketCreateForm .kpi-label {
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 0.8rem;
+}
+
+#ticketCreateForm .kpi-value {
+  color: #1e40af;
+  font-size: 1rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+#ticketCreateForm .ai-list {
+  padding-left: 22px;
+  margin-bottom: 12px;
+}
+
+#ticketCreateForm .ai-list li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+#ticketCreateForm .ai-list a {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Submit and Cancel */
+#ticketCreateForm .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+#ticketCreateForm .form-actions .btn {
+  min-height: 44px;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  #ticketCreateForm .form-section {
+    padding: 16px;
+  }
+
+  #ticketCreateForm .ai-kpi {
+    grid-template-columns: 1fr;
+  }
+
+  #ticketCreateForm .form-actions .btn {
+    width: 100%;
+  }
+}
+
+/* -------- Ticket Detail -------- */
+.ticket-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ticket-meta .badge {
+  font-size: 0.85rem;
+}
+
+.comment-item {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.comment-item.internal {
+  background: #fff8db; /* soft yellow */
+  border-color: #ffe69c;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.section-card {
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+}
+/* -------- Login form styling -------- */
+.login-card {
+  border-radius: 14px;
+}
+
+.login-card label.form-label {
+  font-weight: 600;
+  color: #334155;
+}
+
+.login-card .form-control-lg {
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  min-height: 48px;
+}
+
+.login-card .form-control-lg:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* =========================================
+   ASSIGNMENT FORM
+   ========================================= */
+
+#ticketAssignmentForm {
+    width: 100%;
+}
+
+
+/* Django form.as_p spacing */
+#ticketAssignmentForm p {
+    width: 100%;
+    margin: 0 0 18px;
+}
+
+
+/* Label */
+#ticketAssignmentForm p label {
+    display: block;
+    width: 100%;
+
+    margin-bottom: 8px;
+
+    color: #334155;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+
+/* Select */
+#ticketAssignmentForm p select {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    min-height: 46px;
+
+    padding: 10px 14px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    background-color: #ffffff;
+    color: #0f172a;
+
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+/* Hover */
+#ticketAssignmentForm p select:hover {
+    border-color: #94a3b8;
+}
+
+
+/* Focus */
+#ticketAssignmentForm p select:focus {
+    border-color: #2563eb;
+
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+
+    box-shadow:
+        0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+
+/* Django errors */
+#ticketAssignmentForm .errorlist {
+    margin: 8px 0 0;
+    padding-left: 20px;
+
+    color: #b91c1c;
+    font-size: 0.9rem;
+}
+
+
+/* Assign button */
+#ticketAssignmentForm .btn {
+    min-height: 44px;
+
+    padding: 9px 20px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+}

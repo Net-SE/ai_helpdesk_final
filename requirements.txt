@@ -1,0 +1,16 @@
+Django==4.2.16
+django-environ==0.11.2
+psycopg[binary]==3.3.5
+whitenoise==6.7.0
+django-ratelimit==4.1.0
+Pillow==10.4.0
+psutil==6.0.0
+
+# ### Number 4: 4) Django Settings / URLs
+# Login with:
+# admin_demo / Password123!
+# manager_demo / Password123!
+# tech1_demo / Password123!
+# req1_demo / Password123!
+
+gunicorn==23.0.0

@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}IT Manager Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">IT Help Desk Dashboard</h2>
+  <a class="btn btn-outline-primary" href="{% url 'ticket_report_csv' %}">Export Ticket Report (CSV)</a>
+</div>
+
+<!-- Ticket summary -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card shadow-sm border-primary">
+      <div class="card-body">
+        <div class="text-muted">Total Tickets</div>
+        <h2 class="mb-0">{{ total_tickets }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-secondary">
+      <div class="card-body">
+        <div class="text-muted">Open Tickets</div>
+        <h2 class="mb-0">{{ open_tickets }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-warning">
+      <div class="card-body">
+        <div class="text-muted">In Progress</div>
+        <h2 class="mb-0">{{ in_progress_tickets }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-success">
+      <div class="card-body">
+        <div class="text-muted">Resolved / Closed</div>
+        <h2 class="mb-0">{{ resolved_tickets }} / {{ closed_tickets }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLA KPI -->
+<h4 class="mt-4">SLA Performance</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted">Avg First Response</div>
+        <h4 class="mb-0">{{ avg_first_response }} min</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted">Avg Resolution</div>
+        <h4 class="mb-0">{{ avg_resolution }} min</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted">Response SLA Compliance</div>
+        <h4 class="mb-0 text-success">{{ response_compliance }}%</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted">Resolve SLA Compliance</div>
+        <h4 class="mb-0 text-success">{{ resolve_compliance }}%</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPS / Monitoring KPI -->
+<h4 class="mt-4">System Monitoring (Last 1 Hour)</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card shadow-sm border-info">
+      <div class="card-body">
+        <div class="text-muted">Total Requests</div>
+        <h4 class="mb-0">{{ total_requests }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-info">
+      <div class="card-body">
+        <div class="text-muted">Average Response Time</div>
+        <h4 class="mb-0">{{ avg_resp_ms }} ms</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-warning">
+      <div class="card-body">
+        <div class="text-muted">Failed Requests (400+)</div>
+        <h4 class="mb-0">{{ failed_requests }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-danger">
+      <div class="card-body">
+        <div class="text-muted">Error Rate</div>
+        <h4 class="mb-0 {% if error_rate > 5 %}text-danger{% else %}text-success{% endif %}">
+          {{ error_rate }}%
+        </h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<h4 class="mt-4">Ticket Reports</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6>Tickets by Status</h6>
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6>Tickets by Category</h6>
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6>Tickets by Priority</h6>
+        <canvas id="priorityChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLA breach -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm border-danger">
+      <div class="card-header bg-danger text-white">
+        Response SLA Breaches
+      </div>
+      <div class="card-body">
+        <ul class="mb-0">
+          {% for ticket in response_breaches %}
+            <li>
+              <a href="{% url 'ticket_detail' ticket.pk %}">
+                {{ ticket.display_id }} - {{ ticket.title }}
+              </a>
+            </li>
+          {% empty %}
+            <li class="text-muted">No response SLA breaches.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm border-danger">
+      <div class="card-header bg-danger text-white">
+        Resolution SLA Breaches
+      </div>
+      <div class="card-body">
+        <ul class="mb-0">
+          {% for ticket in resolve_breaches %}
+            <li>
+              <a href="{% url 'ticket_detail' ticket.pk %}">
+                {{ ticket.display_id }} - {{ ticket.title }}
+              </a>
+            </li>
+          {% empty %}
+            <li class="text-muted">No resolution SLA breaches.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Technician report -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-dark text-white">
+    Technician Performance
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Technician</th>
+            <th>Assigned Tickets</th>
+            <th>Resolved Tickets</th>
+            <th>Average Resolution Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for technician in technician_stats %}
+            <tr>
+              <td>{{ technician.username }}</td>
+              <td>{{ technician.assigned_count }}</td>
+              <td>{{ technician.resolved_count }}</td>
+              <td>{{ technician.avg_resolution_minutes }} min</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="text-center text-muted">
+                No technician data available.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{{ by_status|json_script:"status-data" }}
+{{ by_category|json_script:"category-data" }}
+{{ by_priority|json_script:"priority-data" }}
+
+<script>
+  const statusData = JSON.parse(
+    document.getElementById("status-data").textContent
+  );
+
+  const categoryData = JSON.parse(
+    document.getElementById("category-data").textContent
+  );
+
+  const priorityData = JSON.parse(
+    document.getElementById("priority-data").textContent
+  );
+
+  function makeChart(canvasId, chartData, fieldName, label, color) {
+    new Chart(document.getElementById(canvasId), {
+      type: "bar",
+      data: {
+        labels: chartData.map(item => item[fieldName]),
+        datasets: [{
+          label: label,
+          data: chartData.map(item => item.c),
+          backgroundColor: color,
+          borderColor: color,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  }
+
+  makeChart("statusChart", statusData, "status", "Tickets", "#0d6efd");
+  makeChart("categoryChart", categoryData, "category", "Tickets", "#198754");
+  makeChart("priorityChart", priorityData, "priority", "Tickets", "#fd7e14");
+</script>
+
+{% endblock %}
