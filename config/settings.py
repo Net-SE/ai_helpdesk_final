@@ -33,13 +33,26 @@ ALLOWED_HOSTS = [
     for h in env("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
     if h.strip()
 ]
+
+# Automatically allow the Render service hostname
+render_hostname = env("RENDER_EXTERNAL_HOSTNAME", default="")
+
+if render_hostname and render_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_hostname)
+
+
 CSRF_TRUSTED_ORIGINS = [
     h.strip()
     for h in env("DJANGO_CSRF_TRUSTED_ORIGINS", default="").split(",")
     if h.strip()
 ]
 
-# Application definition
+# Automatically trust the Render HTTPS origin
+if render_hostname:
+    render_origin = f"https://{render_hostname}"
+
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
