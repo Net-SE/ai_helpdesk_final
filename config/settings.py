@@ -28,8 +28,16 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="unsafe-development-key")
 DEBUG = env("DJANGO_DEBUG", default=False)
 
-ALLOWED_HOSTS = [h.strip() for h in env("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",") if h.strip()]
-CSRF_TRUSTED_ORIGINS = [h.strip() for h in env("DJANGO_CSRF_TRUSTED_ORIGINS", default="").split(",") if h.strip()]
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in env("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
+    if h.strip()
+]
+CSRF_TRUSTED_ORIGINS = [
+    h.strip()
+    for h in env("DJANGO_CSRF_TRUSTED_ORIGINS", default="").split(",")
+    if h.strip()
+]
 
 # Application definition
 
@@ -54,11 +62,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # custom context (safe early)
     "core.middleware.RequestIDMiddleware",
     "auditlog.middleware.AuditContextMiddleware",
     "ops.middleware.MetricsMiddleware",
-    # django defaults
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -93,7 +99,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 # PostgreSQL is the required database for local development and deployment.
 # Set DATABASE_URL in .env. Example:
 # postgresql://helpdesk:helpdesk@localhost:5432/it_assist
-DATABASE_URL = env("DATABASE_URL", default="postgresql://helpdesk:helpdesk@localhost:5432/it_assist")
+DATABASE_URL = env(
+    "DATABASE_URL", default="postgresql://helpdesk:helpdesk@localhost:5432/it_assist"
+)
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 # Password validation
@@ -106,7 +114,9 @@ SECURE_SSL_REDIRECT = env("DJANGO_SECURE_SSL_REDIRECT", default=False)
 SESSION_COOKIE_SECURE = env("DJANGO_SESSION_COOKIE_SECURE", default=False)
 CSRF_COOKIE_SECURE = env("DJANGO_CSRF_COOKIE_SECURE", default=False)
 SECURE_HSTS_SECONDS = env("DJANGO_SECURE_HSTS_SECONDS", default=0)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = env("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env(
+    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False
+)
 SECURE_HSTS_PRELOAD = env("DJANGO_SECURE_HSTS_PRELOAD", default=False)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
@@ -146,7 +156,9 @@ STORAGES = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_BACKEND = env(
+    "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
+)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="helpdesk@example.com")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
